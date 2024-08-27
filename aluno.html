@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sistema de Inscrições</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1 class="center">Alunos</h1>
+    </header>
+
+
+    <section class="inscricao center">
+        <section class="descoberta center">
+            <h2>Inscreva-se</h2>
+            <p>Encontre facilmente atividades que te interessam.</p>
+            <div class="card-container">
+            </div>
+        </section>
+        <div class="card-section">
+            <div class="card">
+              <h3>Curso de Programação</h3>
+              <p>Crie seus próprios jogos e apps incríveis!</p>
+              <button class="btn-inscrever">Inscreva-se</button>
+            </div>
+            <div class="card">
+              <h3>Oficina de Robótica</h3>
+              <p>Construa seus próprios robôs e explore o mundo da tecnologia!</p>
+              <button class="btn-inscrever">Inscreva-se</button>
+            </div>
+            <div class="card">
+              <h3>Curso de Design Gráfico</h3>
+              <p>Desenvolva sua criatividade e crie designs incríveis!</p>
+              <button class="btn-inscrever">Inscreva-se</button>
+            </div>
+            <div class="card">
+              <h3>Oficina de Produção Musical</h3>
+              <p>Crie suas próprias músicas e explore o mundo da música!</p>
+              <button class="btn-inscrever">Inscreva-se</button>
+            </div>
+            <div class="card">
+              <h3 class="card__title">Curso de Fotografia</h3>
+              <p class="card__description">Capture momentos incríveis e desenvolva seu olhar artístico!</p>
+              <button class="btn-inscrever">Inscreva-se</button>
+            </div>
+          </div>
+        
+        <div class="formulario" style="display: none;">
+            <h2>Formulário de Inscrição</h2>
+            <form style="display: flex; flex-direction: column; align-items: center;">
+                <label for="nome">Nome completo:</label>
+                <input type="text" id="nome" name="nome" required>
+
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="data">Data de nascimento:</label>
+                <input type="date" id="data" name="data" required>
+
+                <label for="termos">Concordo com os termos e condições:</label>
+                <input type="checkbox" id="termos" name="termos" required>
+
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+        <div class="inscricoes">
+            <h2>Minhas Inscrições</h2>
+            <ul id="lista-inscricoes">
+            </ul>
+        </div>
+    </section>
+
+    <section class="acompanhamento center">
+        <h2>Acompanhamento</h2>
+        <p>Acompanhe seu histórico de participação e evolução.</p>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gerenciamento de Alunos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos básicos para o modal */
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        /* Estilos para os itens da lista e botões */
+        #alunos-lista li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .aluno-nome {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .btn-validar,
+        .btn-relatorio {
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            background-color: lightgray;
+        }
+
+        .btn-validar.present {
+            background-color: green;
+        }
+
+        .btn-validar.absent {
+            background-color: red;
+        }
+
+        .btn-relatorio {
+            background-color: blue;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            #alunos-lista li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-validar,
+            .btn-relatorio {
+                margin: 5px 0;
+            }
+        }
+
+        /* Estilo para o botão de envio */
+        #enviar-relatorio-coordenador {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: darkblue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 class="center">Gerenciamento de Alunos</h1>
+    </header>
+
+    <section class="coordenador center">
+        <h2>Lista de Alunos</h2>
+        <div class="lista-alunos">
+            <ul id="alunos-lista">
+                <!-- Lista de alunos será preenchida dinamicamente -->
+            </ul>
+        </div>
+        <button id="enviar-relatorio-coordenador">Enviar Relatório ao Coordenador</button>
+    </section>
+
+    <!-- Modal para escrever relatório -->
+    <div id="relatorio-modal" class="modal">
+        <div class="modal-content">
+            <h2>Escrever Relatório</h2>
+            <textarea id="relatorio-texto" rows="4" cols="50"></textarea>
+            <button id="salvar-relatorio">Salvar</button>
+            <button id="fechar-modal">Fechar</button>
+        </div>
+    </div>
+
+    <button id="btn-clear-all" style="display: block;margin: 20px auto; text-align: center;">Excluir todas as informações</button>
+
+    <script>
+        const btnClearAll = document.getElementById('btn-clear-all');
+
+        btnClearAll.addEventListener('click', () => {
+            const password = prompt('Digite a senha para excluir todas as informações:');
+
+            if (password === 'senha_segura') { // replace with your desired password
+                localStorage.clear();
+                alert('Todas as informações foram excluídas!');
+            } else {
+                alert('Senha incorreta!');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function carregarInscricoesProfessor() {
+                const alunosLista = document.getElementById('alunos-lista');
+                alunosLista.innerHTML = '';
+                let inscricoes = JSON.parse(localStorage.getItem('inscricoes')) || [];
+
+                inscricoes.forEach((inscricao, index) => {
+                    let alunoItem = document.createElement('li');
+                    alunoItem.setAttribute('data-aluno', inscricao.nome);
+                    alunoItem.innerHTML = `
+                        <span class="aluno-nome">${inscricao.nome} (${inscricao.curso})</span>
+                        <button class="btn-validar btn-presente">P</button>
+                        <button class="btn-validar btn-ausente">A</button>
+                        <button class="btn-relatorio">Relatório</button>
+                    `;
+                    alunosLista.appendChild(alunoItem);
+
+                    const estadoPresenca = carregarEstadoPresenca(inscricao.nome);
+                    if (estadoPresenca === 'presente') {
+                        alunoItem.querySelector('.btn-presente').classList.add('present');
+                    } else if (estadoPresenca === 'ausente') {
+                        alunoItem.querySelector('.btn-ausente').classList.add('absent');
+                    }
+
+                    const btnPresente = alunoItem.querySelector('.btn-presente');
+                    const btnAusente = alunoItem.querySelector('.btn-ausente');
+
+                    btnPresente.addEventListener('click', () => marcarPresenca(index, 'presente'));
+                    btnAusente.addEventListener('click', () => marcarPresenca(index, 'ausente'));
+                    alunoItem.querySelector('.btn-relatorio').addEventListener('click', () => abrirModalRelatorio(index));
+                });
+            }
+
+            function carregarEstadoPresenca(nome) {
+                let presencas = JSON.parse(localStorage.getItem('presencas')) || {};
+                return presencas[nome];
+            }
+
+            function marcarPresenca(id, status) {
+                let inscricoes = JSON.parse(localStorage.getItem('inscricoes')) || [];
+                let presencas = JSON.parse(localStorage.getItem('presencas')) || {};
+
+                inscricoes[id].confirmado = true;
+                inscricoes[id].presenca = status;
+
+                // Store presence history
+                if (!inscricoes[id].historico) {
+                    inscricoes[id].historico = [];
+                }
+                inscricoes[id].historico.push({ data: new Date(), presenca: status });
+
+                presencas[inscricoes[id].nome] = status;
+
+                localStorage.setItem('inscricoes', JSON.stringify(inscricoes));
+                localStorage.setItem('presencas', JSON.stringify(presencas));
+                carregarInscricoesProfessor();
+            }
+
+            function abrirModalRelatorio(id) {
+                const modal = document.getElementById('relatorio-modal');
+                const inscricoes = JSON.parse(localStorage.getItem('inscricoes')) || [];
+                const relatorioTexto = document.getElementById('relatorio-texto');
+
+                if (inscricoes[id].relatorio) {
+                    relatorioTexto.value = inscricoes[id].relatorio;
+                } else {
+                    relatorioTexto.value = '';
+                }
+
+                modal.style.display = 'flex';
+                document.getElementById('salvar-relatorio').onclick = () => salvarRelatorio(id);
+            }
+
+            function salvarRelatorio(id) {
+                let inscricoes = JSON.parse(localStorage.getItem('inscricoes')) || [];
+                const textoRelatorio = document.getElementById('relatorio-texto').value;
+                inscricoes[id].relatorio = textoRelatorio;
+                localStorage.setItem('inscricoes', JSON.stringify(inscricoes));
+                fecharModal();
+            }
+
+            function fecharModal() {
+                const modal = document.getElementById('relatorio-modal');
+                modal.style.display = 'none';
+            }
+
+            function gerarRelatorioCoordenador() {
+                let presencas = JSON.parse(localStorage.getItem('presencas')) || {};
+                let relatorios = {};
+
+                let inscricoes = JSON.parse(localStorage.getItem('inscricoes')) || [];
+                inscricoes.forEach(inscricao => {
+                    relatorios[inscricao.nome] = inscricao.relatorio || "Nenhum relatório salvo.";
+                });
+
+                let relatorioCompleto = "Relatório de Presença\n\n";
+
+                for (let nome in presencas) {
+                    let estado = presencas[nome];
+                    let relatorio = relatorios[nome];
+                    relatorioCompleto += `Aluno: ${nome}\nEstado: ${estado}\nRelatório: ${relatorio}\n\n`;
+                }
+
+                const encodedRelatorio = encodeURIComponent(relatorioCompleto);
+                window.location.href = `coordenador.html?relatorio=${encodedRelatorio}`;
+            }
+
+            document.getElementById('enviar-relatorio-coordenador').addEventListener('click', gerarRelatorioCoordenador);
+            carregarInscricoesProfessor();
+        });
+    </script>
+</body>
+
+</html>

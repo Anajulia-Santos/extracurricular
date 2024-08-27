@@ -1,0 +1,119 @@
+<!-- login.html -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1 class="center">Atividade Extracurriculares</h1>
+    </header>
+    <section class="login center">
+        <div class="card">
+            <h2>Login</h2>
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <br>
+                <label for="usertype">User Type:</label>
+                <select id="usertype" name="usertype" required>
+                    <option value="">Select</option>
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor</option>
+                    <option value="coordenador">Coordenador</option>
+                </select>
+                <br>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const usertype = document.getElementById('usertype').value;
+
+            console.log(`Username: ${username}, Password: ${password}, UserType: ${usertype}`);
+
+            if (usertype === 'aluno') {
+                // Redirect to aluno page
+                window.location.href = 'aluno.html?matricula=' + username;
+            } else if (usertype === 'professor') {
+                // Check if the user is a valid professor
+                if (validateProfessor(username, password)) {
+                    // Redirect to professor page
+                    window.location.href = 'professor.html?contrato=' + username;
+                } else {
+                    alert('Professor inválido! Verifique seu username e senha.');
+                }
+            } else if (usertype === 'coordenador') {
+                // Check if the user is a valid coordinator
+                if (validateCoordinator(username, password)) {
+                    // Redirect to coordinator page
+                    window.location.href = 'coordenador.html?codigo=' + username;
+                } else {
+                    alert('Coordenador inválido! Verifique seu username e senha.');
+                }
+            } else {
+                alert('Invalid user type');
+            }
+
+            // Add this check to see if the user is trying to log in as a professor with invalid credentials
+            if (usertype === 'aluno' && validateProfessor(username, password) === false) {
+                alert('Você não é um professor válido! Verifique seu username e senha.');
+            }
+        });
+
+        function validateProfessor(username, password) {
+            console.log(`Validating professor credentials: ${username} and ${password}`);
+
+            const validProfessors = [
+                { username: 'professor1', password: 'password1' },
+                { username: 'professor2', password: 'password2' },
+                // Add more professors here
+            ];
+
+            for (const professor of validProfessors) {
+                if (professor.username === username && professor.password === password) {
+                    console.log(`Professor credentials are valid!`);
+                    return true;
+                }
+            }
+
+            console.log(`Professor credentials are invalid!`);
+            return false;
+        }
+
+        function validateCoordinator(username, password) {
+            console.log(`Validating coordinator credentials: ${username} and ${password}`);
+
+            const validCoordinators = [
+                { username: 'coordinator1', password: 'password1' },
+                { username: 'coordinator2', password: 'password2' },
+                // Add more coordinators here
+            ];
+
+            for (const coordinator of validCoordinators) {
+                if (coordinator.username === username && coordinator.password === password) {
+                    console.log(`Coordinator credentials are valid!`);
+                    return true;
+                }
+            }
+
+            console.log(`Coordinator credentials are invalid!`);
+            return false;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Relatório do Coordenador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        pre {
+            white-space: pre-wrap; /* Preserva quebras de linha e espaços */
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Relatório de Presença</h1>
+    <pre id="relatorio-texto"></pre>
+
+    <script>
+        // Função para carregar o relatório da URL
+        function carregarRelatorio() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const relatorioCompleto = urlParams.get('relatorio') || "Nenhum relatório disponível.";
+            
+            document.getElementById('relatorio-texto').textContent = relatorioCompleto;
+        }
+
+        // Carrega o relatório ao iniciar a página
+        carregarRelatorio();
+    </script>
+</body>
+
+</html>
